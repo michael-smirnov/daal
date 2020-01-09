@@ -1,0 +1,27 @@
+load("@rules_foreign_cc//tools/build_defs:make.bzl", "make")
+
+filegroup(
+    name = "daal_sources",
+    srcs = glob(["**"])
+)
+
+make(
+    name = "daal_core",
+    make_commands = [
+                        "source /export/users/smirnovm/repos/daal-infra/bin/env/lnx32e.sh",
+                        "make -j24 _release_c CORE.ALGORITHMS.CUSTOM=pca REQCPU=avx2"
+                    ],
+    postfix_script = "./bazel-install.sh",
+    lib_source = ":daal_sources",
+
+    static_libraries = [
+        "libdaal_core.a",
+        "libdaal_sequential.a",
+        "libdaal_thread.a"
+    ],
+    shared_libraries = [
+        "libdaal_core.so",
+        "libdaal_sequential.so",
+        "libdaal_thread.so"
+    ]
+)
