@@ -1,0 +1,14 @@
+filegroup(
+    name = "internal_hdrs",
+    srcs = glob(["**/internal/*.hpp"])
+)
+
+# https://docs.bazel.build/versions/master/be/c-cpp.html#cc_library
+cc_library(
+    name = "onedal",
+    srcs = glob(["**/*.cpp"]) + [":internal_hdrs"],
+    hdrs = glob(["**/*.hpp"], exclude=[":internal_hdrs"]),
+    copts = ["--std=c++17"],
+    includes = ["."],
+    visibility = ["//visibility:public"],
+)
