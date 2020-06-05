@@ -21,60 +21,30 @@
 
 namespace dal {
 
-enum class data_layout {
-    row_major,
-    column_major
-};
-
 enum class feature_type {
     nominal,
     ordinal,
-    contiguous
+    interval,
+    ratio
 };
 
-struct feature_info {
-    feature_info()
-        : dtype(data_type::float32),
-          ftype(feature_type::contiguous) { }
+namespace table_type {
+    static constexpr std::int64_t homogen = 1;
+    static constexpr std::int64_t soa = 2;
+}
 
-    feature_info(data_type dtype)
-        : dtype(dtype) {
-        if (dtype == data_type::float32 || dtype == data_type::float64) {
-            ftype = feature_type::contiguous;
-        } else {
-            ftype = feature_type::nominal;
-        }
-    }
-
-    feature_info(feature_type ftype)
-        : ftype(ftype) {
-        if (ftype == feature_type::nominal || ftype == feature_type::ordinal) {
-            dtype = data_type::int32;
-        } else {
-            dtype = data_type::float32;
-        }
-    }
-
-    feature_info(data_type dtype, feature_type ftype)
-        : dtype(dtype),
-          ftype(ftype) { }
-
-    data_type dtype;
-    feature_type ftype;
-};
-
-struct table_metadata {
-    table_metadata()
-        : layout(data_layout::row_major) {}
+class table_metadata {
+    table_metadata();
 
     table_metadata(std::int64_t features_count,
                    feature_info feature = {},
-                   data_layout layout = data_layout::row_major)
-        : layout(layout),
-          features(features_count, feature) {}
+                   data_layout layout = data_layout::row_major);
 
-    data_layout layout;
-    array<feature_info> features;
+    data_type get_data_type(std::int64_t feature_index) const;
+
+    feature_type get_feature_type(std::int64_t feature_index) const;
+
+    std::int64_t get_feature_count() const;
 };
 
 } // namespace dal
