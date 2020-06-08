@@ -83,6 +83,8 @@ public:
         return reinterpret_cast<const DataType*>(impl.get_data());
     }
 
+    const homogen_table_metadata& get_metadata() const;
+
 private:
     homogen_table(const pimpl& impl)
         : table(impl) {}

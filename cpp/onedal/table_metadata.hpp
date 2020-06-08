@@ -17,7 +17,8 @@
 #pragma once
 
 #include "onedal/array.hpp"
-#include "onedal/common.hpp"
+#include "onedal/detail/common.hpp"
+#include "onedal/common_helpers.hpp"
 
 namespace dal {
 
@@ -28,23 +29,77 @@ enum class feature_type {
     ratio
 };
 
+enum class data_layout {
+    row_major,
+    column_major
+};
+
 namespace table_type {
+    static constexpr std::int64_t empty = 0;
     static constexpr std::int64_t homogen = 1;
     static constexpr std::int64_t soa = 2;
+} // namespace table_type
+
+namespace detail {
+    class table_feature_impl;
+    class table_metadata_impl;
+} // namespace detail
+
+class table_feature {
+public:
+    table_feature(data_type);
+    table_feature(data_type, feature_type);
+
+    data_type get_data_type() const;
+    feature_type get_type() const;
+
+private:
+    detail::pimpl<detail::table_feature_impl> impl_;
+};
+
+template <typename T>
+table_feature make_table_feature() {
+    return table_feature { make_data_type<T>() };
 }
 
 class table_metadata {
+    friend detail::pimpl_accessor;
+
+public:
     table_metadata();
 
-    table_metadata(std::int64_t features_count,
-                   feature_info feature = {},
-                   data_layout layout = data_layout::row_major);
+    table_metadata(std::int64_t table_type,
+                   const table_feature&,
+                   std::int64_t row_count,
+                   std::int64_t column_count = 1);
 
-    data_type get_data_type(std::int64_t feature_index) const;
+    table_metadata(std::int64_t table_type,
+                   array<table_feature> features,
+                   std::int64_t rows_count);
 
-    feature_type get_feature_type(std::int64_t feature_index) const;
+    std::int64_t get_row_count() const;
+    std::int64_t get_column_count() const;
+    std::int64_t get_table_type() const;
+    const table_feature& get_feature(std::int64_t column_index) const;
 
-    std::int64_t get_feature_count() const;
+protected:
+    table_metadata(const detail::pimpl<detail::table_metadata_impl>& impl)
+        : impl_(impl) {}
+
+private:
+    detail::pimpl<detail::table_metadata_impl> impl_;
+};
+
+class homogen_table_metadata : public table_metadata {
+public:
+    homogen_table_metadata();
+
+    homogen_table_metadata(const table_feature&,
+                           data_layout,
+                           std::int64_t row_count,
+                           std::int64_t column_count = 1);
+
+    data_layout get_data_layout() const;
 };
 
 } // namespace dal

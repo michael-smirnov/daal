@@ -49,6 +49,18 @@ constexpr auto get_data_type_size(data_type t) {
     }
 }
 
+constexpr bool is_floating_point(data_type t) {
+    if (t == data_type::bfloat16 ||
+        t == data_type::float32 ||
+        t == data_type::float64) {
+            return true;
+    } else {
+        return false;
+    }
+}
+
+// TODO: floating point types are not integral
+
 template <data_type t>
 struct integral_data_type { };
 

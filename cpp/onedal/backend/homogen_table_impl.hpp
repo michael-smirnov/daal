@@ -25,10 +25,7 @@ class homogen_table_impl {
 public:
     template <typename DataType>
     homogen_table_impl(std::int64_t N, std::int64_t p, const DataType* data_pointer, data_layout layout)
-        : row_count_(N),
-          column_count_(p),
-          finfo_(feature_info{ make_data_type<DataType>() }),
-          meta_(table_metadata{ p, finfo_, layout }) {
+        : meta_(homogen_table_metadata{ make_data_type<DataType>(), layout, N, p }) {
         data_.reset_not_owning(reinterpret_cast<const byte_t*>(data_pointer),
                                N * p * sizeof(DataType));
     }
@@ -38,28 +35,26 @@ public:
         : homogen_table_impl(N, p, fill_data(new DataType[N*p], N*p, value), layout) {}
 
     template <typename DataType>
-    homogen_table_impl(std::int64_t p, const array<DataType>& data, data_layout layout) 
-        : row_count_(data.get_size() / p),
-          column_count_(p),
-          finfo_(feature_info{ make_data_type<DataType>() }),
-          meta_(table_metadata{ p, finfo_, layout }) {
-        
-        if (row_count_ * column_count_ != data.get_size()) {
+    homogen_table_impl(std::int64_t p, const array<DataType>& data, data_layout layout)
+        : meta_(homogen_table_metadata{ make_data_type<DataType>(), layout, data.get_size() / p,  p}) {
+        const std::int64_t N = meta_.get_row_count();
+
+        if (N * p != data.get_size()) {
             throw std::runtime_error("data size must be power of column count");
         }
 
         const std::int64_t size_in_bytes = data.get_size() * sizeof(DataType);
         if (data.is_data_owner() && data.has_mutable_data()) {
             data_.reset(reinterpret_cast<byte_t*>(data.get_mutable_data()),
-                        size_in_bytes, 
+                        size_in_bytes,
                         [owner = array(data)](auto) mutable { owner.reset(); });
         } else if (data.has_mutable_data()) {
-            data_.reset_not_owning(reinterpret_cast<byte_t*>(data.get_mutable_data()), 
+            data_.reset_not_owning(reinterpret_cast<byte_t*>(data.get_mutable_data()),
                                    size_in_bytes);
         } else {
             // TODO: the case when data.is_data_owner() == true && data.has_mutable_data() == false
             // is impossible now, but can appear
-            data_.reset_not_owning(reinterpret_cast<const byte_t*>(data.get_data()), 
+            data_.reset_not_owning(reinterpret_cast<const byte_t*>(data.get_data()),
                                    size_in_bytes);
         }
     }
@@ -72,7 +67,7 @@ public:
         return row_count_;
     }
 
-    const table_metadata& get_metadata() const {
+    const homogen_table_metadata& get_metadata() const {
         return meta_;
     }
 
@@ -94,7 +89,7 @@ public:
 
 private:
     template <typename T>
-    static T* fill_data(T* data, std::int64_t size, const T& value) {        
+    static T* fill_data(T* data, std::int64_t size, const T& value) {
         for (std::int64_t i = 0; i < size; i++) {
             data[i] = value;
         }
@@ -103,10 +98,7 @@ private:
     }
 
 private:
-    std::int64_t row_count_;
-    std::int64_t column_count_;
-    feature_info finfo_;
-    table_metadata meta_;
+    homogen_table_metadata meta_;
     array<byte_t> data_;
 };
 
