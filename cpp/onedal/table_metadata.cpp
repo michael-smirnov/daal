@@ -109,6 +109,10 @@ public:
         return layout_;
     }
 
+    void set_data_layout(data_layout dl) {
+        layout_ = dl;
+    }
+
     int64_t get_table_type() const override {
         return table_type::homogen;
     }
@@ -117,12 +121,28 @@ public:
         return row_count_;
     }
 
+    void set_row_count(int64_t value) {
+        row_count_ = value;
+    }
+
     int64_t get_column_count() const override {
         return col_count_;
     }
 
+    void set_column_count(int64_t value) {
+        col_count_ = value;
+    }
+
     const table_feature& get_feature(int64_t column_index) const override {
+        return this->get_feature();
+    }
+
+    const table_feature& get_feature() const {
         return feature_;
+    }
+
+    void set_feature(const table_feature& f) {
+        feature_ = f;
     }
 
 private:
@@ -201,6 +221,8 @@ const table_feature& table_metadata::get_feature(int64_t column_index) const {
     return impl_->get_feature(column_index);
 }
 
+using hm_impl = detail::homogen_table_metadata_impl;
+
 homogen_table_metadata::homogen_table_metadata()
     : table_metadata() {}
 
@@ -213,8 +235,37 @@ homogen_table_metadata::homogen_table_metadata(const table_feature& feature,
     }) {}
 
 data_layout homogen_table_metadata::get_data_layout() const {
-    auto& impl = detail::get_impl<detail::homogen_table_metadata_impl>(*this);
+    auto& impl = detail::get_impl<hm_impl>(*this);
     return impl.get_data_layout();
+}
+
+homogen_table_metadata& homogen_table_metadata::set_data_layout(data_layout dl) {
+    auto& impl = detail::get_impl<hm_impl>(*this);
+    impl.set_data_layout(dl);
+    return *this;
+}
+
+const table_feature& homogen_table_metadata::get_feature_type() const {
+    auto& impl = detail::get_impl<hm_impl>(*this);
+    return impl.get_feature();
+}
+
+homogen_table_metadata& homogen_table_metadata::set_feature_type(const table_feature& f) {
+    auto& impl = detail::get_impl<hm_impl>(*this);
+    impl.set_feature(f);
+    return *this;
+}
+
+homogen_table_metadata& homogen_table_metadata::set_row_count(int64_t value) {
+    auto& impl = detail::get_impl<hm_impl>(*this);
+    impl.set_row_count(value);
+    return *this;
+}
+
+homogen_table_metadata& homogen_table_metadata::set_column_count(int64_t value) {
+    auto& impl = detail::get_impl<hm_impl>(*this);
+    impl.set_column_count(value);
+    return *this;
 }
 
 } // namespace dal

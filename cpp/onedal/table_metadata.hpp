@@ -105,6 +105,13 @@ public:
                            std::int64_t column_count = 1);
 
     data_layout get_data_layout() const;
+    homogen_table_metadata& set_data_layout(data_layout);
+
+    const table_feature& get_feature_type() const;
+    homogen_table_metadata& set_feature_type(const table_feature&);
+
+    homogen_table_metadata& set_row_count(std::int64_t);
+    homogen_table_metadata& set_column_count(std::int64_t);
 };
 
 } // namespace dal
