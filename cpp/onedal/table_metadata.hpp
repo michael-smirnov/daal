@@ -47,11 +47,16 @@ namespace detail {
 
 class table_feature {
 public:
+    table_feature();
     table_feature(data_type);
     table_feature(data_type, feature_type);
 
+
     data_type get_data_type() const;
+    table_feature& set_data_type(data_type);
+
     feature_type get_type() const;
+    table_feature& set_type(feature_type);
 
 private:
     detail::pimpl<detail::table_feature_impl> impl_;

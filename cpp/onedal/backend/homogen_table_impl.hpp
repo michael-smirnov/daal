@@ -60,11 +60,11 @@ public:
     }
 
     std::int64_t get_column_count() const {
-        return column_count_;
+        return meta_.get_column_count();
     }
 
     std::int64_t get_row_count() const {
-        return row_count_;
+        return meta_.get_row_count();
     }
 
     const homogen_table_metadata& get_metadata() const {

@@ -77,11 +77,10 @@ public:
 
     template <typename DataType>
     const DataType* get_data() const {
-        using impl_t = detail::homogen_table_impl_iface;
-
-        auto& impl = detail::get_impl<impl_t>(*this);
-        return reinterpret_cast<const DataType*>(impl.get_data());
+        return reinterpret_cast<const DataType*>(this->get_data());
     }
+
+    const void* get_data() const;
 
     const homogen_table_metadata& get_metadata() const;
 

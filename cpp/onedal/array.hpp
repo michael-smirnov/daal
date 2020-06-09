@@ -24,8 +24,8 @@ namespace dal {
 
 template <typename T>
 class array {
-    static_assert(!std::is_const_v<T>, 
-                    "array class cannot have const-qualified type of data");
+    static_assert(!std::is_const_v<T>,
+                  "array class cannot have const-qualified type of data");
 
     template <typename U>
     friend class array;
@@ -162,7 +162,7 @@ public:
                 delete[] new_data;
                 throw;
             }
-            
+
         } else {
             size_ = size;
         }

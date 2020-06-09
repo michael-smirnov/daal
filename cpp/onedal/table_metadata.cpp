@@ -92,10 +92,14 @@ private:
 
 class homogen_table_metadata_impl : public table_metadata_impl {
 public:
-    homogen_table_metadata(const table_feature& feature,
-                           data_layout& layout,
-                           std::int64_t row_count,
-                           std::int64_t column_count)
+    homogen_table_metadata_impl()
+        : row_count_(0),
+          col_count_(0) {}
+
+    homogen_table_metadata_impl(const table_feature& feature,
+                                data_layout& layout,
+                                std::int64_t row_count,
+                                std::int64_t column_count)
         : feature_(feature),
           layout_(layout),
           row_count_(row_count),
@@ -130,6 +134,9 @@ private:
 
 } // namespace detail
 
+table_feature::table_feature()
+    : table_feature(data_type::float32) {}
+
 table_feature::table_feature(data_type dtype)
     : table_feature(dtype,
                     is_floating_point(dtype) ? feature_type::ratio
@@ -142,8 +149,18 @@ data_type table_feature::get_data_type() const {
     return impl_->dtype;
 }
 
+table_feature& table_feature::set_data_type(data_type dt) {
+    impl_->dtype = dt;
+    return *this;
+}
+
 feature_type table_feature::get_type() const {
     return impl_->ftype;
+}
+
+table_feature& table_feature::set_type(feature_type ft) {
+    impl_->ftype = ft;
+    return *this;
 }
 
 table_metadata::table_metadata()
@@ -161,7 +178,7 @@ table_metadata::table_metadata(int64_t table_type,
 
 table_metadata::table_metadata(int64_t table_type,
                                array<table_feature> features,
-                               int64_t rows_count)
+                               int64_t row_count)
     : impl_(new detail::simple_metadata_impl {
         table_type,
         features,
@@ -177,11 +194,11 @@ int64_t table_metadata::get_column_count() const {
 }
 
 int64_t table_metadata::get_table_type() const {
-    return impl_.get_table_type();
+    return impl_->get_table_type();
 }
 
 const table_feature& table_metadata::get_feature(int64_t column_index) const {
-    return impl_.get_feature(column_index);
+    return impl_->get_feature(column_index);
 }
 
 homogen_table_metadata::homogen_table_metadata()
