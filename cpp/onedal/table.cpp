@@ -57,6 +57,10 @@ void table::init_impl(detail::table_impl_iface* impl) {
     impl_ = pimpl { impl };
 }
 
+int64_t homogen_table::kind() {
+    return 1;
+}
+
 homogen_table::homogen_table()
     : homogen_table(backend::homogen_table_impl{}) {}
 

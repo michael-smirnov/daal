@@ -34,7 +34,6 @@ class table_metadata_impl {
 public:
     virtual ~table_metadata_impl() {}
 
-    virtual int64_t get_table_type() const = 0;
     virtual int64_t get_row_count() const = 0;
     virtual int64_t get_column_count() const = 0;
     virtual const table_feature& get_feature(int64_t column_index) const = 0;
@@ -42,10 +41,6 @@ public:
 
 class empty_metadata_impl : public table_metadata_impl {
 public:
-    int64_t get_table_type() const override {
-        return table_type::empty;
-    }
-
     int64_t get_row_count() const override {
         return 0;
     }
@@ -61,16 +56,10 @@ public:
 
 class simple_metadata_impl : public table_metadata_impl {
 public:
-    simple_metadata_impl(int64_t table_type,
-                         array<table_feature> features,
+    simple_metadata_impl(array<table_feature> features,
                          int64_t row_count)
-        : table_type_(table_type),
-          features_(features),
+        : features_(features),
           row_count_(row_count) {}
-
-    int64_t get_table_type() const override {
-        return table_type_;
-    }
 
     int64_t get_row_count() const override {
         return row_count_;
@@ -85,7 +74,6 @@ public:
     }
 
 private:
-    int64_t table_type_;
     array<table_feature> features_;
     int64_t row_count_;
 };
@@ -111,10 +99,6 @@ public:
 
     void set_data_layout(homogen_data_layout dl) {
         layout_ = dl;
-    }
-
-    int64_t get_table_type() const override {
-        return table_type::homogen;
     }
 
     int64_t get_row_count() const override {
@@ -186,21 +170,17 @@ table_feature& table_feature::set_type(feature_type ft) {
 table_metadata::table_metadata()
     : impl_(new detail::empty_metadata_impl()) {}
 
-table_metadata::table_metadata(int64_t table_type,
-                               const table_feature& feature,
+table_metadata::table_metadata(const table_feature& feature,
                                int64_t row_count,
                                int64_t column_count)
     : impl_(new detail::simple_metadata_impl {
-        table_type,
         array<table_feature>(column_count, feature),
         row_count
     }) {}
 
-table_metadata::table_metadata(int64_t table_type,
-                               array<table_feature> features,
+table_metadata::table_metadata(array<table_feature> features,
                                int64_t row_count)
     : impl_(new detail::simple_metadata_impl {
-        table_type,
         features,
         row_count
     }) {}
@@ -211,10 +191,6 @@ int64_t table_metadata::get_row_count() const {
 
 int64_t table_metadata::get_column_count() const {
     return impl_->get_column_count();
-}
-
-int64_t table_metadata::get_table_type() const {
-    return impl_->get_table_type();
 }
 
 const table_feature& table_metadata::get_feature(int64_t column_index) const {

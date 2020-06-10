@@ -26,7 +26,6 @@ TEST(table_test, can_construct_empty_table) {
     ASSERT_FALSE(t.has_data());
     ASSERT_EQ(t.get_row_count(), 0);
     ASSERT_EQ(t.get_column_count(), 0);
-    ASSERT_EQ(t.get_metadata().get_table_type(), table_type::empty);
 }
 
 TEST(table_test, can_set_custom_implementation) {
@@ -68,7 +67,7 @@ TEST(homogen_table_test, can_construct_empty_table) {
     homogen_table t;
 
     ASSERT_FALSE(t.has_data());
-    ASSERT_EQ(t.get_metadata().get_table_type(), table_type::homogen);
+    ASSERT_EQ(t.get_kind(), homogen_table::kind());
     ASSERT_EQ(t.get_row_count(), 0);
     ASSERT_EQ(t.get_column_count(), 0);
 }

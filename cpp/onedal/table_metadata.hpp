@@ -29,15 +29,6 @@ enum class feature_type {
     ratio
 };
 
-// TODO: table_kind
-// hide in implementation details
-// expose only table_id
-namespace table_type {
-    constexpr std::int64_t empty = 0;
-    constexpr std::int64_t homogen = 1;
-    constexpr std::int64_t soa = 2;
-} // namespace table_type
-
 namespace detail {
     class table_feature_impl;
     class table_metadata_impl;
@@ -71,13 +62,11 @@ class table_metadata {
 public:
     table_metadata();
 
-    table_metadata(std::int64_t table_type,
-                   const table_feature&,
+    table_metadata(const table_feature&,
                    std::int64_t row_count,
                    std::int64_t column_count = 1);
 
-    table_metadata(std::int64_t table_type,
-                   array<table_feature> features,
+    table_metadata(array<table_feature> features,
                    std::int64_t rows_count);
 
     // move to table only
@@ -86,8 +75,6 @@ public:
     // rename get_feature_count
     std::int64_t get_column_count() const;
 
-    // move to table type and make static
-    std::int64_t get_table_type() const;
     const table_feature& get_feature(std::int64_t column_index) const;
 
 protected:

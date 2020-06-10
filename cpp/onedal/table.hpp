@@ -46,6 +46,10 @@ public:
     std::int64_t get_row_count() const;
     const table_metadata& get_metadata() const;
 
+    std::int64_t get_kind() const {
+        return 0;
+    }
+
 protected:
     table(const pimpl& impl)
         : impl_(impl) {}
@@ -59,6 +63,9 @@ private:
 class homogen_table : public table {
     friend detail::pimpl_accessor;
     using pimpl = detail::pimpl<detail::homogen_table_impl_iface>;
+
+public:
+    static std::int64_t kind();
 
 public:
     homogen_table();
@@ -83,6 +90,10 @@ public:
     const void* get_data() const;
 
     const homogen_table_metadata& get_metadata() const;
+
+    std::int64_t get_kind() const {
+        return kind();
+    }
 
 private:
     homogen_table(const pimpl& impl)
