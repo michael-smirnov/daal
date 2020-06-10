@@ -57,6 +57,9 @@ void table::init_impl(detail::table_impl_iface* impl) {
     impl_ = pimpl { impl };
 }
 
+homogen_table::homogen_table()
+    : homogen_table(backend::homogen_table_impl{}) {}
+
 template <typename DataType>
 homogen_table::homogen_table(int64_t row_count, int64_t column_count,
                              const DataType* data_pointer,

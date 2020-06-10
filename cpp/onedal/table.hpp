@@ -61,7 +61,7 @@ class homogen_table : public table {
     using pimpl = detail::pimpl<detail::homogen_table_impl_iface>;
 
 public:
-    homogen_table() = default;
+    homogen_table();
 
     template <typename Impl,
               typename = std::enable_if_t<is_homogen_table_impl_v<std::decay_t<Impl>>>>

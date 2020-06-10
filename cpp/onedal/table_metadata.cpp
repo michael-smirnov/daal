@@ -224,7 +224,9 @@ const table_feature& table_metadata::get_feature(int64_t column_index) const {
 using hm_impl = detail::homogen_table_metadata_impl;
 
 homogen_table_metadata::homogen_table_metadata()
-    : table_metadata() {}
+    : table_metadata(detail::pimpl<detail::table_metadata_impl>{
+        new detail::homogen_table_metadata_impl()
+    }) {}
 
 homogen_table_metadata::homogen_table_metadata(const table_feature& feature,
                                                data_layout layout,

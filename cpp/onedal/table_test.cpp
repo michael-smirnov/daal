@@ -68,7 +68,7 @@ TEST(homogen_table_test, can_construct_empty_table) {
     homogen_table t;
 
     ASSERT_FALSE(t.has_data());
-    ASSERT_EQ(t.get_metadata().get_table_type(), table_type::empty);
+    ASSERT_EQ(t.get_metadata().get_table_type(), table_type::homogen);
     ASSERT_EQ(t.get_row_count(), 0);
     ASSERT_EQ(t.get_column_count(), 0);
 }

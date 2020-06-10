@@ -23,6 +23,9 @@ namespace dal::backend {
 
 class homogen_table_impl {
 public:
+    homogen_table_impl()
+    {}
+
     template <typename DataType>
     homogen_table_impl(std::int64_t N, std::int64_t p, const DataType* data_pointer, data_layout layout)
         : meta_(homogen_table_metadata{ make_data_type<DataType>(), layout, N, p }) {
