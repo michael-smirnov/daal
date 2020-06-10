@@ -63,14 +63,9 @@ public:
     table_metadata();
 
     table_metadata(const table_feature&,
-                   std::int64_t row_count,
                    std::int64_t column_count = 1);
 
-    table_metadata(array<table_feature> features,
-                   std::int64_t rows_count);
-
-    // move to table only
-    std::int64_t get_row_count() const;
+    table_metadata(array<table_feature> features);
 
     // rename get_feature_count
     std::int64_t get_column_count() const;
@@ -96,7 +91,6 @@ public:
 
     homogen_table_metadata(const table_feature&,
                            homogen_data_layout,
-                           std::int64_t row_count,
                            std::int64_t column_count = 1);
 
     homogen_data_layout get_data_layout() const;
@@ -105,7 +99,6 @@ public:
     const table_feature& get_feature_type() const;
     homogen_table_metadata& set_feature_type(const table_feature&);
 
-    homogen_table_metadata& set_row_count(std::int64_t);
     homogen_table_metadata& set_column_count(std::int64_t);
 };
 

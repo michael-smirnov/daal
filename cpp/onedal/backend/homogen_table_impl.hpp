@@ -24,11 +24,13 @@ namespace dal::backend {
 class homogen_table_impl {
 public:
     homogen_table_impl()
+        : row_count_(0)
     {}
 
     template <typename DataType>
     homogen_table_impl(std::int64_t N, std::int64_t p, const DataType* data_pointer, homogen_data_layout layout)
-        : meta_(homogen_table_metadata{ make_data_type<DataType>(), layout, N, p }) {
+        : meta_(homogen_table_metadata{ make_data_type<DataType>(), layout, p }),
+          row_count_(N) {
         data_.reset_not_owning(reinterpret_cast<const byte_t*>(data_pointer),
                                N * p * sizeof(DataType));
     }
@@ -39,8 +41,9 @@ public:
 
     template <typename DataType>
     homogen_table_impl(std::int64_t p, const array<DataType>& data, homogen_data_layout layout)
-        : meta_(homogen_table_metadata{ make_data_type<DataType>(), layout, data.get_size() / p,  p}) {
-        const std::int64_t N = meta_.get_row_count();
+        : meta_(homogen_table_metadata{ make_data_type<DataType>(), layout,  p}),
+          row_count_(data.get_size() / p) {
+        const std::int64_t N = row_count_;
 
         if (N * p != data.get_size()) {
             throw std::runtime_error("data size must be power of column count");
@@ -67,7 +70,7 @@ public:
     }
 
     std::int64_t get_row_count() const {
-        return meta_.get_row_count();
+        return row_count_;
     }
 
     const homogen_table_metadata& get_metadata() const {
@@ -103,6 +106,7 @@ private:
 private:
     homogen_table_metadata meta_;
     array<byte_t> data_;
+    int64_t row_count_;
 };
 
 } // namespace dal::backend

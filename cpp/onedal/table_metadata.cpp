@@ -34,17 +34,12 @@ class table_metadata_impl {
 public:
     virtual ~table_metadata_impl() {}
 
-    virtual int64_t get_row_count() const = 0;
     virtual int64_t get_column_count() const = 0;
     virtual const table_feature& get_feature(int64_t column_index) const = 0;
 };
 
 class empty_metadata_impl : public table_metadata_impl {
 public:
-    int64_t get_row_count() const override {
-        return 0;
-    }
-
     int64_t get_column_count() const override {
         return 0;
     }
@@ -56,14 +51,8 @@ public:
 
 class simple_metadata_impl : public table_metadata_impl {
 public:
-    simple_metadata_impl(array<table_feature> features,
-                         int64_t row_count)
-        : features_(features),
-          row_count_(row_count) {}
-
-    int64_t get_row_count() const override {
-        return row_count_;
-    }
+    simple_metadata_impl(array<table_feature> features)
+        : features_(features) {}
 
     int64_t get_column_count() const override {
         return features_.get_size();
@@ -75,22 +64,18 @@ public:
 
 private:
     array<table_feature> features_;
-    int64_t row_count_;
 };
 
 class homogen_table_metadata_impl : public table_metadata_impl {
 public:
     homogen_table_metadata_impl()
-        : row_count_(0),
-          col_count_(0) {}
+        : col_count_(0) {}
 
     homogen_table_metadata_impl(const table_feature& feature,
                                 homogen_data_layout layout,
-                                std::int64_t row_count,
                                 std::int64_t column_count)
         : feature_(feature),
           layout_(layout),
-          row_count_(row_count),
           col_count_(column_count) {}
 
     homogen_data_layout get_data_layout() const {
@@ -99,14 +84,6 @@ public:
 
     void set_data_layout(homogen_data_layout dl) {
         layout_ = dl;
-    }
-
-    int64_t get_row_count() const override {
-        return row_count_;
-    }
-
-    void set_row_count(int64_t value) {
-        row_count_ = value;
     }
 
     int64_t get_column_count() const override {
@@ -132,7 +109,6 @@ public:
 private:
     table_feature feature_;
     homogen_data_layout layout_;
-    int64_t row_count_;
     int64_t col_count_;
 };
 
@@ -171,23 +147,15 @@ table_metadata::table_metadata()
     : impl_(new detail::empty_metadata_impl()) {}
 
 table_metadata::table_metadata(const table_feature& feature,
-                               int64_t row_count,
                                int64_t column_count)
     : impl_(new detail::simple_metadata_impl {
-        array<table_feature>(column_count, feature),
-        row_count
+        array<table_feature>(column_count, feature)
     }) {}
 
-table_metadata::table_metadata(array<table_feature> features,
-                               int64_t row_count)
+table_metadata::table_metadata(array<table_feature> features)
     : impl_(new detail::simple_metadata_impl {
-        features,
-        row_count
+        features
     }) {}
-
-int64_t table_metadata::get_row_count() const {
-    return impl_->get_row_count();
-}
 
 int64_t table_metadata::get_column_count() const {
     return impl_->get_column_count();
@@ -206,10 +174,9 @@ homogen_table_metadata::homogen_table_metadata()
 
 homogen_table_metadata::homogen_table_metadata(const table_feature& feature,
                                                homogen_data_layout layout,
-                                               int64_t row_count,
                                                int64_t column_count)
     : table_metadata(detail::pimpl<detail::table_metadata_impl>{
-        new detail::homogen_table_metadata_impl(feature, layout, row_count, column_count)
+        new detail::homogen_table_metadata_impl(feature, layout, column_count)
     }) {}
 
 homogen_data_layout homogen_table_metadata::get_data_layout() const {
@@ -231,12 +198,6 @@ const table_feature& homogen_table_metadata::get_feature_type() const {
 homogen_table_metadata& homogen_table_metadata::set_feature_type(const table_feature& f) {
     auto& impl = detail::get_impl<hm_impl>(*this);
     impl.set_feature(f);
-    return *this;
-}
-
-homogen_table_metadata& homogen_table_metadata::set_row_count(int64_t value) {
-    auto& impl = detail::get_impl<hm_impl>(*this);
-    impl.set_row_count(value);
     return *this;
 }
 
