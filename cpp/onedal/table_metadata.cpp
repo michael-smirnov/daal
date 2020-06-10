@@ -34,18 +34,18 @@ class table_metadata_impl {
 public:
     virtual ~table_metadata_impl() {}
 
-    virtual int64_t get_column_count() const = 0;
-    virtual const table_feature& get_feature(int64_t column_index) const = 0;
+    virtual int64_t get_feature_count() const = 0;
+    virtual const table_feature& get_feature(int64_t feature_index) const = 0;
 };
 
 class empty_metadata_impl : public table_metadata_impl {
 public:
-    int64_t get_column_count() const override {
+    int64_t get_feature_count() const override {
         return 0;
     }
 
-    const table_feature& get_feature(int64_t column_index) const {
-        throw std::runtime_error("no columns in empty table");
+    const table_feature& get_feature(int64_t feature_index) const {
+        throw std::runtime_error("no features in empty table");
     }
 };
 
@@ -54,12 +54,12 @@ public:
     simple_metadata_impl(array<table_feature> features)
         : features_(features) {}
 
-    int64_t get_column_count() const override {
+    int64_t get_feature_count() const override {
         return features_.get_size();
     }
 
-    const table_feature& get_feature(int64_t column_index) const override {
-        return features_[column_index];
+    const table_feature& get_feature(int64_t feature_index) const override {
+        return features_[feature_index];
     }
 
 private:
@@ -69,14 +69,14 @@ private:
 class homogen_table_metadata_impl : public table_metadata_impl {
 public:
     homogen_table_metadata_impl()
-        : col_count_(0) {}
+        : feature_count_(0) {}
 
     homogen_table_metadata_impl(const table_feature& feature,
                                 homogen_data_layout layout,
-                                std::int64_t column_count)
+                                std::int64_t feature_count)
         : feature_(feature),
           layout_(layout),
-          col_count_(column_count) {}
+          feature_count_(feature_count) {}
 
     homogen_data_layout get_data_layout() const {
         return layout_;
@@ -86,30 +86,18 @@ public:
         layout_ = dl;
     }
 
-    int64_t get_column_count() const override {
-        return col_count_;
+    int64_t get_feature_count() const override {
+        return feature_count_;
     }
 
-    void set_column_count(int64_t value) {
-        col_count_ = value;
-    }
-
-    const table_feature& get_feature(int64_t column_index) const override {
-        return this->get_feature();
-    }
-
-    const table_feature& get_feature() const {
+    const table_feature& get_feature(int64_t feature_index) const override {
         return feature_;
-    }
-
-    void set_feature(const table_feature& f) {
-        feature_ = f;
     }
 
 private:
     table_feature feature_;
     homogen_data_layout layout_;
-    int64_t col_count_;
+    int64_t feature_count_;
 };
 
 } // namespace detail
@@ -147,9 +135,9 @@ table_metadata::table_metadata()
     : impl_(new detail::empty_metadata_impl()) {}
 
 table_metadata::table_metadata(const table_feature& feature,
-                               int64_t column_count)
+                               int64_t feature_count)
     : impl_(new detail::simple_metadata_impl {
-        array<table_feature>(column_count, feature)
+        array<table_feature>(feature_count, feature)
     }) {}
 
 table_metadata::table_metadata(array<table_feature> features)
@@ -157,12 +145,12 @@ table_metadata::table_metadata(array<table_feature> features)
         features
     }) {}
 
-int64_t table_metadata::get_column_count() const {
-    return impl_->get_column_count();
+int64_t table_metadata::get_feature_count() const {
+    return impl_->get_feature_count();
 }
 
-const table_feature& table_metadata::get_feature(int64_t column_index) const {
-    return impl_->get_feature(column_index);
+const table_feature& table_metadata::get_feature(int64_t feature_index) const {
+    return impl_->get_feature(feature_index);
 }
 
 using hm_impl = detail::homogen_table_metadata_impl;
@@ -174,9 +162,9 @@ homogen_table_metadata::homogen_table_metadata()
 
 homogen_table_metadata::homogen_table_metadata(const table_feature& feature,
                                                homogen_data_layout layout,
-                                               int64_t column_count)
+                                               int64_t feature_count)
     : table_metadata(detail::pimpl<detail::table_metadata_impl>{
-        new detail::homogen_table_metadata_impl(feature, layout, column_count)
+        new detail::homogen_table_metadata_impl(feature, layout, feature_count)
     }) {}
 
 homogen_data_layout homogen_table_metadata::get_data_layout() const {
@@ -187,23 +175,6 @@ homogen_data_layout homogen_table_metadata::get_data_layout() const {
 homogen_table_metadata& homogen_table_metadata::set_data_layout(homogen_data_layout dl) {
     auto& impl = detail::get_impl<hm_impl>(*this);
     impl.set_data_layout(dl);
-    return *this;
-}
-
-const table_feature& homogen_table_metadata::get_feature_type() const {
-    auto& impl = detail::get_impl<hm_impl>(*this);
-    return impl.get_feature();
-}
-
-homogen_table_metadata& homogen_table_metadata::set_feature_type(const table_feature& f) {
-    auto& impl = detail::get_impl<hm_impl>(*this);
-    impl.set_feature(f);
-    return *this;
-}
-
-homogen_table_metadata& homogen_table_metadata::set_column_count(int64_t value) {
-    auto& impl = detail::get_impl<hm_impl>(*this);
-    impl.set_column_count(value);
     return *this;
 }
 

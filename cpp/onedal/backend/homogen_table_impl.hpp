@@ -66,7 +66,7 @@ public:
     }
 
     std::int64_t get_column_count() const {
-        return meta_.get_column_count();
+        return meta_.get_feature_count();
     }
 
     std::int64_t get_row_count() const {

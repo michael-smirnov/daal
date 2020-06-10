@@ -63,14 +63,12 @@ public:
     table_metadata();
 
     table_metadata(const table_feature&,
-                   std::int64_t column_count = 1);
+                   std::int64_t feature_count = 1);
 
     table_metadata(array<table_feature> features);
 
-    // rename get_feature_count
-    std::int64_t get_column_count() const;
-
-    const table_feature& get_feature(std::int64_t column_index) const;
+    std::int64_t get_feature_count() const;
+    const table_feature& get_feature(std::int64_t feature_index) const;
 
 protected:
     table_metadata(const detail::pimpl<detail::table_metadata_impl>& impl)
@@ -91,15 +89,10 @@ public:
 
     homogen_table_metadata(const table_feature&,
                            homogen_data_layout,
-                           std::int64_t column_count = 1);
+                           std::int64_t feature_count = 1);
 
     homogen_data_layout get_data_layout() const;
     homogen_table_metadata& set_data_layout(homogen_data_layout);
-
-    const table_feature& get_feature_type() const;
-    homogen_table_metadata& set_feature_type(const table_feature&);
-
-    homogen_table_metadata& set_column_count(std::int64_t);
 };
 
 } // namespace dal
