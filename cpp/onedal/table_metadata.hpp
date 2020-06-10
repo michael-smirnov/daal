@@ -29,15 +29,13 @@ enum class feature_type {
     ratio
 };
 
-enum class data_layout {
-    row_major,
-    column_major
-};
-
+// TODO: table_kind
+// hide in implementation details
+// expose only table_id
 namespace table_type {
-    static constexpr std::int64_t empty = 0;
-    static constexpr std::int64_t homogen = 1;
-    static constexpr std::int64_t soa = 2;
+    constexpr std::int64_t empty = 0;
+    constexpr std::int64_t homogen = 1;
+    constexpr std::int64_t soa = 2;
 } // namespace table_type
 
 namespace detail {
@@ -82,8 +80,13 @@ public:
                    array<table_feature> features,
                    std::int64_t rows_count);
 
+    // move to table only
     std::int64_t get_row_count() const;
+
+    // rename get_feature_count
     std::int64_t get_column_count() const;
+
+    // move to table type and make static
     std::int64_t get_table_type() const;
     const table_feature& get_feature(std::int64_t column_index) const;
 
@@ -95,17 +98,22 @@ private:
     detail::pimpl<detail::table_metadata_impl> impl_;
 };
 
+enum class homogen_data_layout {
+    row_major,
+    column_major
+};
+
 class homogen_table_metadata : public table_metadata {
 public:
     homogen_table_metadata();
 
     homogen_table_metadata(const table_feature&,
-                           data_layout,
+                           homogen_data_layout,
                            std::int64_t row_count,
                            std::int64_t column_count = 1);
 
-    data_layout get_data_layout() const;
-    homogen_table_metadata& set_data_layout(data_layout);
+    homogen_data_layout get_data_layout() const;
+    homogen_table_metadata& set_data_layout(homogen_data_layout);
 
     const table_feature& get_feature_type() const;
     homogen_table_metadata& set_feature_type(const table_feature&);

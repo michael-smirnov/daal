@@ -73,7 +73,7 @@ public:
     template <typename DataType>
     homogen_table(std::int64_t row_count, std::int64_t column_count,
                   const DataType* data_pointer,
-                  data_layout layout = data_layout::row_major);
+                  homogen_data_layout layout = homogen_data_layout::row_major);
 
     template <typename DataType>
     const DataType* get_data() const {

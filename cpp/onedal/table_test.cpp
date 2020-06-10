@@ -126,7 +126,7 @@ TEST(homogen_table_test, can_construct_rowmajor_table_3x2) {
     ASSERT_EQ(2, t.get_column_count());
 
     auto meta = t.get_metadata();
-    ASSERT_EQ(data_layout::row_major, meta.get_data_layout());
+    ASSERT_EQ(homogen_data_layout::row_major, meta.get_data_layout());
 
     for (std::int64_t i = 0; i < t.get_column_count(); i++) {
         ASSERT_EQ(data_type::float32, meta.get_feature(i).get_data_type());
@@ -142,14 +142,14 @@ TEST(homogen_table_test, can_construct_colmajor_float64_table) {
         1., 2., 3.,
         4., 5., 6.
     };
-    homogen_table t { 2, 3, data, data_layout::column_major };
+    homogen_table t { 2, 3, data, homogen_data_layout::column_major };
 
     ASSERT_TRUE(t.has_data());
     ASSERT_EQ(2, t.get_row_count());
     ASSERT_EQ(3, t.get_column_count());
 
     auto meta = t.get_metadata();
-    ASSERT_EQ(data_layout::column_major, meta.get_data_layout());
+    ASSERT_EQ(homogen_data_layout::column_major, meta.get_data_layout());
 
     for (std::int64_t i = 0; i < t.get_column_count(); i++) {
         ASSERT_EQ(data_type::float64, meta.get_feature(i).get_data_type());
@@ -208,7 +208,7 @@ TEST(homogen_table_test, can_construct_table_with_move) {
     const auto& m1 = t1.get_metadata();
     const auto& m2 = t2.get_metadata();
 
-    ASSERT_EQ(data_layout::row_major, m2.get_data_layout());
+    ASSERT_EQ(homogen_data_layout::row_major, m2.get_data_layout());
     ASSERT_EQ(data_type::float32, m2.get_feature(0).get_data_type());
     ASSERT_EQ(data_type::float32, m2.get_feature(1).get_data_type());
     ASSERT_EQ(data, t2.get_data<float>());

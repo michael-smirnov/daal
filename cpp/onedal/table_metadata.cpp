@@ -97,7 +97,7 @@ public:
           col_count_(0) {}
 
     homogen_table_metadata_impl(const table_feature& feature,
-                                data_layout& layout,
+                                homogen_data_layout layout,
                                 std::int64_t row_count,
                                 std::int64_t column_count)
         : feature_(feature),
@@ -105,11 +105,11 @@ public:
           row_count_(row_count),
           col_count_(column_count) {}
 
-    data_layout get_data_layout() const {
+    homogen_data_layout get_data_layout() const {
         return layout_;
     }
 
-    void set_data_layout(data_layout dl) {
+    void set_data_layout(homogen_data_layout dl) {
         layout_ = dl;
     }
 
@@ -147,7 +147,7 @@ public:
 
 private:
     table_feature feature_;
-    data_layout layout_;
+    homogen_data_layout layout_;
     int64_t row_count_;
     int64_t col_count_;
 };
@@ -229,19 +229,19 @@ homogen_table_metadata::homogen_table_metadata()
     }) {}
 
 homogen_table_metadata::homogen_table_metadata(const table_feature& feature,
-                                               data_layout layout,
+                                               homogen_data_layout layout,
                                                int64_t row_count,
                                                int64_t column_count)
     : table_metadata(detail::pimpl<detail::table_metadata_impl>{
         new detail::homogen_table_metadata_impl(feature, layout, row_count, column_count)
     }) {}
 
-data_layout homogen_table_metadata::get_data_layout() const {
+homogen_data_layout homogen_table_metadata::get_data_layout() const {
     auto& impl = detail::get_impl<hm_impl>(*this);
     return impl.get_data_layout();
 }
 
-homogen_table_metadata& homogen_table_metadata::set_data_layout(data_layout dl) {
+homogen_table_metadata& homogen_table_metadata::set_data_layout(homogen_data_layout dl) {
     auto& impl = detail::get_impl<hm_impl>(*this);
     impl.set_data_layout(dl);
     return *this;

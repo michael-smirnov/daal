@@ -73,7 +73,7 @@ TEST(homogen_table_builder_test, can_construct_table) {
 
     auto meta = t.get_metadata();
 
-    ASSERT_EQ(data_layout::row_major, meta.get_data_layout());
+    ASSERT_EQ(homogen_data_layout::row_major, meta.get_data_layout());
 
     for (std::int64_t i = 0; i < t.get_column_count(); i++) {
         ASSERT_EQ(data_type::float32, meta.get_feature(i).get_data_type());

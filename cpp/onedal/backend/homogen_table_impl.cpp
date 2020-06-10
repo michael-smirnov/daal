@@ -33,7 +33,7 @@ void homogen_table_impl::pull_rows(array<T>& block, const range& rows) const {
     const int64_t block_size = rows.get_element_count(N)*p;
     const data_type block_dtype = make_data_type<T>();
 
-    if (meta_.get_data_layout() != data_layout::row_major) {
+    if (meta_.get_data_layout() != homogen_data_layout::row_major) {
         throw std::runtime_error("unsupported data layout");
     }
 
@@ -66,7 +66,7 @@ void homogen_table_impl::push_back_rows(const array<T>& block, const range& rows
     const int64_t block_size = rows.get_element_count(N)*p;
     const data_type block_dtype = make_data_type<T>();
 
-    if (meta_.get_data_layout() != data_layout::row_major) {
+    if (meta_.get_data_layout() != homogen_data_layout::row_major) {
         throw std::runtime_error("unsupported data layout");
     }
 
@@ -99,7 +99,7 @@ void homogen_table_impl::pull_column(array<T>& block, int64_t idx, const range& 
     const int64_t block_size = rows.get_element_count(N);
     const data_type block_dtype = make_data_type<T>();
 
-    if (meta_.get_data_layout() != data_layout::row_major) {
+    if (meta_.get_data_layout() != homogen_data_layout::row_major) {
         throw std::runtime_error("unsupported data layout");
     }
 
