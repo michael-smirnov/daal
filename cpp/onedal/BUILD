@@ -60,3 +60,12 @@ dal_test(
   ],
   visibility = ["//visibility:public"],
 )
+
+dal_test(
+  name = "dp_test",
+  srcs = ["dparray_test.cpp"],
+  deps = [
+    ":common"
+  ],
+  visibility = ["//visibility:public"],
+)
