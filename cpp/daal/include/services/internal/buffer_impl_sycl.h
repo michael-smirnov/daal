@@ -314,6 +314,11 @@ public:
             }
             cl::sycl::free(const_cast<void *>(data), q);
         });
+
+        st |= internal::sycl::catchSyclExceptions([&]() mutable {
+            auto event = _q.prefetch(usmData, sizeof(T)*count);
+            event.wait_and_throw();
+        });
         return st;
     }
 
@@ -326,7 +331,11 @@ public:
     Status operator()(const UsmBufferIface<T> & buffer) DAAL_C11_OVERRIDE
     {
         _data = buffer.get();
-        return Status();
+
+        return internal::sycl::catchSyclExceptions([&]() mutable {
+            auto event = _q.prefetch(_data.get(), sizeof(T)*buffer.size());
+            event.wait_and_throw();
+        });
     }
 
     Status operator()(const SyclBufferIface<T> & buffer) DAAL_C11_OVERRIDE
